@@ -59,6 +59,10 @@ function Page() {
     },
   });
   const tariffsData = tariffs?.data?.tariffs?.data || [];
+  const bestInternetSpeed = tariffsData.reduce((acc, tariff) => {
+    return acc.speed > tariff.internet?.speed_in ? acc : {id: tariff.id, speed: tariff.internet?.speed_in}
+  }, {speed: -1})
+  console.log('test =', bestInternetSpeed)
 
   const handleChange = (event) => {
     const foundProvider = providersData.find(
@@ -111,19 +115,19 @@ function Page() {
             {tariffsData.map((tariff) => (
               <TableRow key={tariff.id}>
                 <TableCell component="th" scope="row">
-                  {tariff.name}
+                  {tariff.name || '-'}
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  {tariff.internet?.speed_in}
+                  {tariff.internet?.speed_in || '-'}
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  {tariff.tv?.channels}
+                  {tariff.tv?.channels || '-'}
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  {tariff.tv?.channels_hd}
+                  {tariff.tv?.channels_hd || '-'}
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  {tariff?.displayPrice}
+                  {tariff?.displayPrice || '-'}
                 </TableCell>
               </TableRow>
             ))}
