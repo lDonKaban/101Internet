@@ -35,32 +35,6 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: 500,
   }
 }));
-
-// const getBestCondition = (param) => {
-//   let result
-//   if (param === 'displayPrice') {
-//     result = tariffsData.reduce((acc, tariff) => {
-//       const value = tariff[param] || Infinity
-//       if (acc.value < value) return acc
-//       if (acc.value === value) {
-//         acc.id.push(tariff.id)
-//         return acc
-//       }
-//       return acc = {id: [tariff.id], value}
-//     }, {id: [], value: Infinity})
-//   } else {
-//     result = tariffsData.reduce((acc, tariff) => {
-//       const speed = param === 'speed_in' ? tariff.internet?.speed_in || 0
-//       if (acc?.speed > speed) return acc
-//       if (acc?.speed === speed) {
-//         acc.id.push(tariff.id)
-//         return acc
-//       }
-//       return acc = {id: [tariff.id], speed}
-//     }, {id: [], speed: -1});
-//   }
-//   return result
-// }
 function Page() {
   const classes = useStyles();
 
