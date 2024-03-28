@@ -18,6 +18,8 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { PROVIDERS_QUERY } from "../Queries/providersQuery";
 import { TARIFFS_QUERY } from "../Queries/tariffsQuery";
+import { customSort } from "../helpers/customSort";
+import { getColor } from "../helpers/getColor";
 
 const REGION_URL = "moskva";
 
@@ -34,7 +36,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const getColor = (arr) => arr.length > 1 ? 'blue' : 'green';
 // const getBestCondition = (param) => {
 //   let result
 //   if (param === 'displayPrice') {
@@ -84,9 +85,12 @@ function Page() {
       sort: "name",
     },
   });
-  const tariffsData = tariffs?.data?.tariffs?.data || [];
-  const bestInternetSpeed = tariffsData.reduce((acc, tariff) => {
-    const speed = tariff.internet?.speed_in || 0
+  let tariffsData = tariffs?.data?.tariffs?.data || [];
+  const sortedTariffsList = [...tariffsData].sort(customSort)
+
+  const bestInternetSpeed = sortedTariffsList.reduce((acc, tariff) => {
+    if (!tariff.internet?.speed_in) return acc
+    const speed = tariff.internet?.speed_in
     if (acc?.speed > speed) return acc
     if (acc?.speed === speed) {
       acc.id.push(tariff.id)
@@ -94,10 +98,9 @@ function Page() {
     }
     return acc = {id: [tariff.id], speed}
   }, {id: [], speed: -1});
-
   bestInternetSpeed.color = getColor(bestInternetSpeed.id);
 
-  const bestPrice = tariffsData.reduce((acc, tariff) => {
+  const bestPrice = sortedTariffsList.reduce((acc, tariff) => {
     const price = tariff.displayPrice || Infinity
     if (acc.price < price) return acc
     if (acc.price === price) {
@@ -106,11 +109,11 @@ function Page() {
     }
     return acc = {id: [tariff.id], price}
   }, {id: [], price: Infinity})
-
   bestPrice.color = getColor(bestPrice.id)
 
-  const bestCountTV = tariffsData.reduce((acc, tariff) => {
-    const countTV = tariff.tv?.channels || 0
+  const bestCountTV = sortedTariffsList.reduce((acc, tariff) => {
+    if (!tariff.tv?.channels) return acc
+    const countTV = tariff.tv?.channels
     if (acc.count > countTV) return acc
     if (acc.count === countTV) {
       acc.id.push(tariff.id)
@@ -118,11 +121,11 @@ function Page() {
     }
     return acc = {id: [tariff.id], count: countTV}
   }, {id: [], count: -1})
-
   bestCountTV.color = getColor(bestCountTV.id)
 
-  const bestCountHDTV = tariffsData.reduce((acc, tariff) => {
-    const countTV = tariff.tv?.channels_hd || 0
+  const bestCountHDTV = sortedTariffsList.reduce((acc, tariff) => {
+    if (!tariff.tv?.channels_hd) return acc
+    const countTV = tariff.tv?.channels_hd
     if (acc.count > countTV) return acc
     if (acc.count === countTV) {
       acc.id.push(tariff.id)
@@ -130,8 +133,8 @@ function Page() {
     }
     return acc = {id: [tariff.id], count: countTV}
   }, {id: [], count: -1})
-
   bestCountHDTV.color = getColor(bestCountHDTV.id)
+
   const handleChange = (event) => {
     const foundProvider = providersData.find(
       (x) => x.id === +event.target.value
@@ -190,7 +193,7 @@ function Page() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {tariffsData.map((tariff) => (
+            {sortedTariffsList.map((tariff) => (
               <TableRow key={tariff.id}>
                 <TableCell component="th" scope="row">
                   {tariff.name || '-'}
